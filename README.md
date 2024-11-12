@@ -57,10 +57,10 @@ physics, but I will try to explain the basics here.
 ![A series of diagrams explaining how a capacitor is charged and discharged](capacitor.jpeg)
 
 The diagrams above describe simple circuits that charge and discharge a capacitor with 
-capacitance $C$. To charge a capacitor, one needs to apply a voltage across its plates,
+capacitance C. To charge a capacitor, one needs to apply a voltage across its plates,
 which we can think of as connecting the capacitor to a battery. When we do this, negative 
 charges will flow to the top plate of the capacitor and positive charges will flow to
-the bottom plate. The total charge $Q$ on the bottom plate is given by $Q = CV$. This means 
+the bottom plate. The total charge Q on the bottom plate is given by Q = CV. This means 
 that the amount of charge a capacitor can hold can vary depending on the voltage applied. 
 Since we are trying to store digital data, we just need enough charge to sufficiently 
 distinguish between a charged state and a depleted state. A cool fact about capacitors is 
@@ -70,7 +70,7 @@ charge indefinitely. This is why it is useful in computer memory.
 To discharge the capacitor, we simply need to reconnect the two plates by completing the
 circuit *without* the battery in place. This will allow the positive and negative charges
 which are attracted to each other to flow towards regions of opposite charge until they
-are evenly dispersed across the circuit. This results in the net charge $Q$ on the bottom 
+are evenly dispersed across the circuit. This results in the net charge Q on the bottom 
 plate to be 0. 
 
 I propose the following procedure for storing a bit of data. If we wish to store a 1, we 
@@ -141,14 +141,14 @@ components in memory which can lead to flipped bits \[1\]. There are many mechan
 disturbance errors, but fundamentally, they are all possible due to the close physical
 proximity of circuit elements in DRAM. One possible explanation is called capacitive 
 coupling. It turns out we can actually treat two adjacent wires as one capacitor. The
-capacitance $C$ depends on the both the length of the two wires and the distance separating
-them in a complicated way, but in general, $C$ increases as the distance decreases. Now,
+capacitance C depends on the both the length of the two wires and the distance separating
+them in a complicated way, but in general, C increases as the distance decreases. Now,
 something about capacitors that I haven't mentioned yet is that they can actually transmit
 voltage across the two plates — but only if that voltage varies with time. In other words,
 when a capacitor is placed along a wire, the voltage on one end of the wire will reach the
 other end of the wire if the voltage varies fast enough with time. The frequency at which
 this happens is known as the cutoff frequency. This frequency is inversely proportional to
-$C$, meaning that a higher capacitance makes it easier to transmit voltage through a 
+C, meaning that a higher capacitance makes it easier to transmit voltage through a 
 capacitor (we don't have to switch the voltage on and off as quickly if the capacitance
 is high enough).
 
@@ -172,8 +172,8 @@ rows.
 
 ### Inducing disturbance errors programmatically
 
-Suppose that a byte at address $X$ resides physically in row 2 of a particular bank in DRAM. If we 
-wanted to flip bits in adjacent rows, we would have to repeatedly read from address $X$. We can write
+Suppose that a byte at address X resides physically in row 2 of a particular bank in DRAM. If we 
+wanted to flip bits in adjacent rows, we would have to repeatedly read from address X. We can write
 a very simple program in assembly that does this \[2\]:
 
 ```asm
@@ -186,7 +186,7 @@ rowhammer:
 The `clflush` instruction is necessary because if the CPU notices that a program is accessing the
 same memory over and over again, it's just going to store that data in one of its caches to 
 improve performance. The `clflush` instruction tells the CPU to dump the cached data associated
-with address $X$. This guarantees that we are always reading from the vulnerable DRAM chip.
+with address X. This guarantees that we are always reading from the vulnerable DRAM chip.
 
 Unfortunately, the process is not quite this easy. In order to increase performance, the 
 memory controller won't transfer data from a row buffer back into row unless another row in
@@ -195,7 +195,7 @@ transfer the data in row 2 into the row buffer, and then each read operation wil
 from the row buffer. This means that the row 2 wordline is only actually toggled once, even 
 though we repeatedly read from data stored in that row \[1\]. To force multiple wordline 
 activations, we need to open another row *in the same bank*. Let's suppose that the byte at 
-address $Y$ physically lives in row 4. We can then run the following code:
+address Y physically lives in row 4. We can then run the following code:
 
 ```asm
 rowhammer2:
@@ -206,7 +206,7 @@ rowhammer2:
   jmp rowhammer2
 ```
 
-This code will induce disturbance errors. This is because $X$ and $Y$ live in different rows
+This code will induce disturbance errors. This is because X and Y live in different rows
 in the same bank, so repeatedly accessing them one after the other forces the memory controller
 to continually toggle specific wordlines.
 
