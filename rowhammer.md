@@ -57,7 +57,7 @@ physics, but I will try to explain the basics here.
 ![A series of diagrams explaining how a capacitor is charged and discharged](capacitor.jpeg)
 
 The diagrams above describe simple circuits that charge and discharge a capacitor with 
-capacitance $C$. To charge a capacitor, one needs to apply a voltage accross its plates,
+capacitance $C$. To charge a capacitor, one needs to apply a voltage across its plates,
 which we can think of as connecting the capacitor to a battery. When we do this, negative 
 charges will flow to the top plate of the capacitor and positive charges will flow to
 the bottom plate. The total charge $Q$ on the bottom plate is given by $Q = CV$. This means 
@@ -68,7 +68,7 @@ that if we remove the battery from the circuit, the capacitor will actually hold
 charge indefinitely. This is why it is useful in computer memory.
 
 To discharge the capacitor, we simply need to reconnect the two plates by completing the
-ciruit *without* the battery in place. This will allow the positive and negative charges
+circuit *without* the battery in place. This will allow the positive and negative charges
 which are attracted to each other to flow towards regions of opposite charge until they
 are evenly dispersed across the circuit. This results in the net charge $Q$ on the bottom 
 plate to be 0. 
@@ -81,7 +81,7 @@ created a single bit of memory.
 
 ### DRAM composition
 
-Dynamic random access memory (DRAM) is, at it's core, billions of these capacitors laid
+Dynamic random access memory (DRAM) is, at its core, billions of these capacitors laid
 out in two-dimensional arrays known as banks. Below is a figure from the original 
 row hammer paper describing the layout of DRAM \[1\].
 
@@ -94,7 +94,7 @@ bitline is connected to a column of cells. When the wordline is active, it switc
 of the transistors in a row, connecting all the capacitors to a larger circuit. This is 
 essentially the same thing as discharging the capacitors. Any charge originally stored on a 
 capacitor is sent down the bitline when a cell is connected to an active wordline. When the 
-wordline is innactive, this turns off the transistor, electrically isolating the capacitor 
+wordline is inactive, this turns off the transistor, electrically isolating the capacitor 
 and allowing it to store charge. The final component is the row buffer,
 which can store an entire row of binary data using something other than just a single
 capacitor (possibly an S-R latch similar to a CPU register). Each bit in the row
@@ -114,15 +114,15 @@ allowed to discharge. Once the information is in the row buffer, the memory cont
 will fetch the desired byte from the row buffer, completing the read operation. It now
 has to put the data in the row buffer back into row 3. It does this by applying a voltage
 to bitlines that correspond to a 1, charging up the capacitor connected to that bitline.
-Finally, the wordline will become innactive, switching off all transistors in row 3 and
+Finally, the wordline will become inactive, switching off all transistors in row 3 and
 disconnecting the capacitors, allowing them to retain their charge and store data. To write
 to memory, the same operation occurs, only the data in the row buffer is first modified 
-to reflect the desired change before transfering data back to a row \[1\].
+to reflect the desired change before transferring data back to a row \[1\].
 
 Now there is one more complication I need to address. Remember how I said a capacitor will 
 hold its charge indefinitely? Well I lied, it won't. This is due to leakage caused by
 the transistor. Several mechanisms are at play, including quantum tunneling, but the net
-effect is that the cells in DRAM will slowly loose their charge through their transistors, 
+effect is that the cells in DRAM will slowly lose their charge through their transistors, 
 even when the wordline is not active. For the standard DDR3 (relevant at the time the row
 hammer paper was written), the cells are guaranteed to hold their charge for 64 
 milliseconds \[1\]. After that, a cell's state is ambiguous. So, we need a way to periodically
@@ -130,13 +130,13 @@ refresh rows in a bank. We actually already have a process that does exactly tha
 need to do is periodically read from a row (although we don't actually need to do anything
 with the data). The act of discharging and recharging the capacitors is a sufficient enough
 to mitigate this complication. As long as we refresh a row at least every 64 milliseconds,
-we can be reasonable sure that no data is lost. By the way, this refresh process is what
+we can be reasonably sure that no data is lost. By the way, this refresh process is what
 makes DRAM dynamic. Other types of memory, such as static random access memory, do not 
 have this same problem.
 
 ## Disturbance errors
 
-A disturbance error referes to an unwanted interaction between two unrelated circuit 
+A disturbance error refers to an unwanted interaction between two unrelated circuit 
 components in memory which can lead to flipped bits \[1\]. There are many mechanisms for
 disturbance errors, but fundamentally, they are all possible due to the close physical
 proximity of circuit elements in DRAM. One possible explanation is called capacitive 
@@ -144,7 +144,7 @@ coupling. It turns out we can actually treat two adjacent wires as one capacitor
 capacitance $C$ depends on the both the length of the two wires and the distance separating
 them in a complicated way, but in general, $C$ increases as the distance decreases. Now,
 something about capacitors that I haven't mentioned yet is that they can actually transmit
-voltage accross the two plates — but only if that voltage varies with time. In other words,
+voltage across the two plates — but only if that voltage varies with time. In other words,
 when a capacitor is placed along a wire, the voltage on one end of the wire will reach the
 other end of the wire if the voltage varies fast enough with time. The frequency at which
 this happens is known as the cutoff frequency. This frequency is inversely proportional to
@@ -156,18 +156,18 @@ is high enough).
 
 *This is not even remotely accurate but it's a funny meme. Credit: Facebook user Physics 4 u.*
 
-The extreme density of DRAM chips means adjacent word lines experience relatively high capacitive
+The extreme density of DRAM chips means adjacent wordlines experience relatively high capacitive
 coupling. Put this together with the fact that memory operates at very high frequencies (on the 
-order of GHz) and we have just the right conditions for word lines to influence each other, even 
+order of GHz) and we have just the right conditions for wordlines to influence each other, even 
 though they theoretically should be completely independent. Let's look at an example to show
 how these disturbance errors could flip bits. Suppose we have a program that needs to read data
-in row 3 very frequently. This would mean that the row 3 word line switches on and off
-a lot in a short amount of time. Since the voltage on the row 3 word line is switching at high
-frequencies, some of this voltage ends up powering adjacent word lines, which partially turns on
+in row 3 very frequently. This would mean that the row 3 wordline switches on and off
+a lot in a short amount of time. Since the voltage on the row 3 wordline is switching at high
+frequencies, some of this voltage ends up powering adjacent wordlines, which partially turns on
 the transistors in rows 2 and 4. This causes the capacitors in rows 2 and 4 to experience abnormally
 high leakage currents, resulting in faster discharge times. In this scenario, it is possible that 
 some cells will loose enough charge within the refresh window of 64 milliseconds to flip from a 1
-to a 0. Thus, repeatedly accessing a particular row in memory can cuase bits to flip in adjacent 
+to a 0. Thus, repeatedly accessing a particular row in memory can cause bits to flip in adjacent 
 rows.
 
 ### Inducing disturbance errors programmatically
@@ -192,8 +192,8 @@ Unfortunately, the process is not quite this easy. In order to increase performa
 memory controller won't transfer data from a row buffer back into row unless another row in
 the same bank needs to be accessed. So, when we run the code above, the memory controller will
 transfer the data in row 2 into the row buffer, and then each read operation will read directly
-from the row buffer. This means that the row 2 word line is only actually toggled once, even 
-though we repeatedly read from data stored in that row \[1\]. To force multiple word line 
+from the row buffer. This means that the row 2 wordline is only actually toggled once, even 
+though we repeatedly read from data stored in that row \[1\]. To force multiple wordline 
 activations, we need to open another row *in the same bank*. Let's suppose that the byte at 
 address $Y$ physically lives in row 4. We can then run the following code:
 
@@ -208,7 +208,7 @@ rowhammer2:
 
 This code will induce disturbance errors. This is because $X$ and $Y$ live in different rows
 in the same bank, so repeatedly accessing them one after the other forces the memory controller
-to continually toggle specific word lines.
+to continually toggle specific wordlines.
 
 ## How can we exploit disturbance errors?
 
@@ -222,19 +222,19 @@ conference. I suggest looking at Ref. \[2\] and its associated
 https://www.blackhat.com/docs/us-15/materials/us-15-Seaborn-Exploiting-The-DRAM-Rowhammer-Bug-To-Gain-Kernel-Privileges-wp.pdf) 
 for more information about this exploit.
 
-Soliving the first problem can be achieved a couple of different ways,
-but my favorite is just guess and check. A typical DDR3 rank will have 8 banks (although a
+Solving the first problem can be achieved a couple of different ways,
+but my favorite is just to guess and check. A typical DDR3 rank will have 8 banks (although a
 module might have more than one rank, and computers often have more than one module) \[1\]. 
 This means that if we row hammer addresses at random, we will eventually find two addresses
 in the same bank \[2\]. But how do we know that we successfully flipped bits? The first thing we
 can do is look directly for bit flips in memory. If we know what the data was supposed 
 to be before we row hammered, we can look for discrepancies after the fact. This process requires
 us to allocate a huge chunk of data to our address mapping program. Otherwise, we would not be
-able to read the memory that we are trying test because it would not belong to the program. The 
+able to read the memory that we are trying to test because it would not belong to the program. The 
 other thing we can do is look at how long it takes the computer to read from two different 
 addresses \[2\]. If two addresses live in the same bank, then accessing their data back-to-back 
 will take longer than if they were in different banks. This is because data that lives in different
-banks can be served by two separate row buffers and is closer to a parallel operation. If the
+banks can be served by two separate row buffers and reading is closer to a parallel operation. If the
 data lives in the same bank, the memory controller has to transfer both rows into the row
 buffer *sequentially*, resulting in slower read times.
 
@@ -247,7 +247,7 @@ I will skip over the details of how this works, but we can in principle cover a 
 physical memory with PTEs by repeatedly mapping the same file using the `mmap()` system call. 
 Once we do this, we row hammer the vulnerable addresses we found before, hopefully flipping bits.
 Since most of memory is just PTEs, there is a high probability that one of the bit flips that occurs
-will alter the physical address a PTE maps to. Futhermore, since memory is filled with PTEs, it is 
+will alter the physical address a PTE maps to. Furthermore, since memory is filled with PTEs, it is 
 likely that the random bit flip causes the PTE to point to *another PTE*. Once the program is allowed
 to edit the address in a PTE associated with the program, it is game over. We have access to all of
 physical memory.
@@ -269,12 +269,12 @@ that makes row hammer possible in the first place.
 How do we fix this issue? Since row hammer is a hardware bug, no software fix will completely 
 mitigate it (although we can make it more challenging to exploit). A true fix needs to be 
 implemented at the hardware level. One such approach has existed in the server space for a while:
-error-correcting-code (ECC) memory. ECC memory dedicates a portion of its usuable capacity solely
+error-correcting-code (ECC) memory. ECC memory dedicates a portion of its usable capacity solely
 to redundancy bits that can be used to identify and correct errors in memory. ECC memory comes with
 a performance overhead, and the memory is generally more expensive than typical modules used by home
 computers. Additionally, while ECC memory can correct 1 or even 2 bit errors, but it cannot correct
 3 or more errors. Using row hammer, it is possible to induce more than 2 errors, meaning this fix
-is not idea.
+is not ideal.
 
 Another fix proposed in Ref. \[1\] is to refresh adjacent rows after reading from a specific row
 in memory. However, we wouldn't refresh every single time we read from memory since this would
@@ -290,8 +290,6 @@ of these solutions get to the root of the problem, which is that the increased d
 necessarily leads to electromagnetic interference between circuit elements. As memory capacities
 continue to increase, a more radical change in design may be necessary to prevent attacks like 
 row hammer.
-
-PROOF READ IN DOCS OR SOMETHING: WORD LINE -> WORDLINE, BIT LINE -> BITLINE
 
 ## References
 
