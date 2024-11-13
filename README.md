@@ -19,7 +19,7 @@ Nevertheless, errors can occur. You may have heard that cosmic rays from
 solar storms can wreak havoc on computer systems, and this is because these 
 rays carry enough energy to meaningfully interact with computer memory, 
 potentially flipping a bit. Depending on what information that bit carried, this
-can either go completely unnoticed, or completely crash your computer. Luckily,
+can either go completely unnoticed or completely crash your computer. Luckily,
 the vast majority of the bits stored in your computer's memory is data, not 
 executable code, so these random events are far more likely to slightly alter 
 the brightness value of a single pixel on your screen than cause any real issues. 
@@ -28,10 +28,11 @@ But what if we had a little bit more control over where these random bit flips
 occur? As you will see, just this little bit of control is enough for an
 attacker to potentially gain a foothold on your machine. It turns out that
 due to the incredible density of modern memory, it is possible to write a program 
-that not only affects the address is requests to read from or write to, but also 
+that not only affects the address it requests to read from or write to, but also 
 neighboring memory cells on the physical chip. The exploit is called row hammer,
-and despite being discovered in 2014, the attack is still relevant today. To 
-understand how it works, we need a basic understanding what computer memory
+and despite being discovered in 2014, the attack is still relevant today. 
+
+To understand how it works, we first need a basic understanding what computer memory
 actually is and how it works.
 
 ## How computer memory works
@@ -109,7 +110,7 @@ the capacitors in row 3 to discharge through their respective bitlines. In the p
 the voltage on each bitline will momentarily be either "high" or "low" corresponding to 
 whether there was charge stored in a cell or not. The row buffer bits latch onto their
 respective bitline's voltage. This operation transfers the state of row 3 into the row
-buffer, but it has also destroys all the data in row 3 since all the capacitors are 
+buffer, but it also destroys all the data in row 3 since all the capacitors are 
 allowed to discharge. Once the information is in the row buffer, the memory controller
 will fetch the desired byte from the row buffer, completing the read operation. It now
 has to put the data in the row buffer back into row 3. It does this by applying a voltage
@@ -141,7 +142,7 @@ components in memory which can lead to flipped bits \[1\]. There are many mechan
 disturbance errors, but fundamentally, they are all possible due to the close physical
 proximity of circuit elements in DRAM. One possible explanation is called capacitive 
 coupling. It turns out we can actually treat two adjacent wires as one capacitor. The
-capacitance C depends on the both the length of the two wires and the distance separating
+capacitance C depends on both the length of the two wires and the distance separating
 them in a complicated way, but in general, C increases as the distance decreases. Now,
 something about capacitors that I haven't mentioned yet is that they can actually transmit
 voltage across the two plates — but only if that voltage varies with time. In other words,
@@ -200,7 +201,7 @@ address Y physically lives in row 4. We can then run the following code:
 ```asm
 rowhammer2:
   mov (X), %rax  ; read memory at address X into the %rax register
-  mov (Y), %rbx  ; read memory at address y into the %rbx register
+  mov (Y), %rbx  ; read memory at address Y into the %rbx register
   clflush (X)    ; flush the cache associated with the address X
   clflush (Y)    ; flush the cache associated with the address Y
   jmp rowhammer2
